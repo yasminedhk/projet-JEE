@@ -21,15 +21,16 @@ import static lsi.m1.utils.Constantes.*;
  * @author dahak
  */
 public class BD {
+
     Connection connexion;
     Statement stmt;
     ResultSet res;
-      boolean test;
+    boolean test;
     ArrayList<Users> listeUsers;
     ArrayList<Employees> listeEmployees;
-    PreparedStatement  preparedStatement;
-    
-       public BD() {
+    PreparedStatement preparedStatement;
+
+    public BD() {
         try {
             connexion = DriverManager.getConnection(URL, USER_BDD, MDP_BDD);
         } catch (SQLException e) {
@@ -37,7 +38,11 @@ public class BD {
         }
 
     }
-
+    
+    /**
+     * 
+     * @return 
+     */
     public Statement getStatement() {
         try {
             stmt = connexion.createStatement();
@@ -46,7 +51,12 @@ public class BD {
         }
         return stmt;
     }
-
+    
+    /**
+     * 
+     * @param req
+     * @return 
+     */
     public ResultSet getResultSet(String req) {
         try {
             stmt = getStatement();
@@ -58,7 +68,12 @@ public class BD {
         return res;
     }
     
-     public Employees getEmployeeByID(String id) {
+    /**
+     * recupère l'employé à partir de son id dans la base
+     * @param id string
+     * @return un employé
+     */
+    public Employees getEmployeeByID(String id) {
         try {
             preparedStatement = connexion.prepareStatement(SELECT_EMPLOYE_BY_ID);
             preparedStatement.setInt(1, Integer.parseInt(id));
@@ -83,8 +98,12 @@ public class BD {
         }
         return null;
     }
-
-     public ArrayList getUsers() {
+    
+    /**
+     * renvoi tous les users
+     * @return une liste d'user
+     */
+    public ArrayList getUsers() {
         listeUsers = new ArrayList<>();
         try {
             res = getResultSet(REQ_ALL_USERS);
@@ -94,19 +113,21 @@ public class BD {
                 userBean.setLogin(res.getString("LOGIN"));
                 userBean.setpassword(res.getString("PASSWORD"));
                 userBean.setIsAdmin(res.getBoolean("ADMIN"));
-             
-                
 
                 listeUsers.add(userBean);
             }
-          
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return listeUsers;
     }
-     
-       public ArrayList getEmployees() {
+    
+    /**
+     * recupère tous les employés dans la base
+     * @return 
+     */
+    public ArrayList getEmployees() {
         listeEmployees = new ArrayList<>();
         try {
             res = getResultSet(REQ_ALL_EMPLOYEES);
@@ -118,38 +139,42 @@ public class BD {
                 personne.setPnom(res.getString("PRENOM"));
                 personne.setTeldom(res.getString("TELDOM"));
                 personne.setTelpro(res.getString("TELPRO"));
-                   personne.setTelport(res.getString("TELPORT"));
+                personne.setTelport(res.getString("TELPORT"));
                 personne.setAdresse(res.getString("ADRESSE"));
                 personne.setCodep(res.getString("CODEPOSTAL"));
                 personne.setVille(res.getString("VILLE"));
                 personne.setEmail(res.getString("EMAIL"));
-             
-                
 
                 listeEmployees.add(personne);
             }
-          
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return listeEmployees;
     }
     
-    public boolean checkAdmin(Users input){
-       return input.isIsAdmin();
-      
-        
+    /**
+     * vérifie si le user est un admin
+     * @param input
+     * @return 
+     */
+    public boolean checkAdmin(Users input) {
+        return input.isIsAdmin();
+
     }
-        
     
-     
-    public void modifierEmpl(Employees empl){
-     
-        stmt=getStatement();
-        
+    /**
+     * mets à jour les infos de l'employé dans la bdd
+     * @param empl 
+     */
+    public void modifierEmpl(Employees empl) {
+
+        stmt = getStatement();
+
         try {
-            
-               stmt.executeUpdate("UPDATE EMPLOYES SET NOM = '"
+
+            stmt.executeUpdate("UPDATE EMPLOYES SET NOM = '"
                     + empl.getNom() + "',"
                     + "PRENOM = '" + empl.getPnom() + "',"
                     + "TELDOM = '" + empl.getTeldom() + "',"
@@ -161,66 +186,65 @@ public class BD {
                     + "EMAIL = '" + empl.getEmail() + "'"
                     + "WHERE ID = " + empl.getId()
             );
-            
-            
+
         } catch (SQLException ex) {
-            Logger.getLogger(BD.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    } 
-     
-     
-     
-     
-   public boolean checkConnexion(Users input)
-   {
-      
-       listeUsers=getUsers();
-       for(Users i : listeUsers)
-       {
-           if(i.getLogin().equals(input.getLogin()) && i.getpassword().equals(input.getpassword()))
-               
-           {   input.setIsAdmin(i.isIsAdmin());
-               return true;
-           }
-           
-       }
-      return false;     
-   }
-   
-    public void DeleteEmp(String id){
-        try {
-            stmt = getStatement();
-            stmt.executeUpdate(REQ_SUPP_EMPL + id);
-        } catch (SQLException ex){
             Logger.getLogger(BD.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
+    /**
+     * vérifie si le couple login:mdp est correct
+     * @param input
+     * @return 
+     */
+    public boolean checkConnexion(Users input) {
+
+        listeUsers = getUsers();
+        for (Users i : listeUsers) {
+            if (i.getLogin().equals(input.getLogin()) && i.getpassword().equals(input.getpassword())) {
+                input.setIsAdmin(i.isIsAdmin());
+                return true;
+            }
+
+        }
+        return false;
+    }
     
-      public void ajouterEmpl(Employees empl){
-      
+    /**
+     * supprime l'employé de la base
+     * @param id 
+     */
+    public void DeleteEmp(String id) {
         try {
-            PreparedStatement pstmt =  connexion.prepareStatement(REQ_AJOUTER_EMPL);
-            pstmt.setString(1,empl.getNom());
-            pstmt.setString(2,empl.getPnom());
-            pstmt.setString(3,empl.getTeldom());
-            pstmt.setString(4,empl.getTelport());
-            pstmt.setString(5,empl.getTelpro());
-       
-            pstmt.setString(6,empl.getAdresse());
-            pstmt.setString(7,empl.getCodep());
-            pstmt.setString(8,empl.getVille());
-            pstmt.setString(9,empl.getEmail());
+            stmt = getStatement();
+            stmt.executeUpdate(REQ_SUPP_EMPL + id);
+        } catch (SQLException ex) {
+            Logger.getLogger(BD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * ajoute un employé en base
+     * @param empl 
+     */
+    public void ajouterEmpl(Employees empl) {
+
+        try {
+            PreparedStatement pstmt = connexion.prepareStatement(REQ_AJOUTER_EMPL);
+            pstmt.setString(1, empl.getNom());
+            pstmt.setString(2, empl.getPnom());
+            pstmt.setString(3, empl.getTeldom());
+            pstmt.setString(4, empl.getTelport());
+            pstmt.setString(5, empl.getTelpro());
+
+            pstmt.setString(6, empl.getAdresse());
+            pstmt.setString(7, empl.getCodep());
+            pstmt.setString(8, empl.getVille());
+            pstmt.setString(9, empl.getEmail());
             pstmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(BD.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    
-    
-     
-     
-    
- 
 }

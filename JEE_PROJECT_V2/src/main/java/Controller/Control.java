@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import static lsi.m1.utils.Constantes.*;
+import static utils.Constantes.*;
 import models.Employes;
 import models.EmployesSB;
 import models.Users;
@@ -43,7 +43,9 @@ public class Control extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        
-        
+        /**
+         * Lancer page de login
+         */
              
         if ( request.getParameter("action")== null) {
          
@@ -52,14 +54,22 @@ public class Control extends HttpServlet {
         } 
         switch(request.getParameter("action"))
         {
+            /**
+             * clique sur le bouton connexion
+             */
             case "connexion":
-                
+                /**
+                 * les cases sont vides
+                 */
                  if(request.getParameter("pass").equals("") || request.getParameter("pseudo").equals("")){
                    request.setAttribute("fieldIsEmpty", FIELDEMPTY_ERROR_MESSAGE);
                     request.getRequestDispatcher(ACCUEIL).forward(request, response);
                 }
                  else
                  {
+                     /**
+                      * Verifie l'existance du user dans la BDD et lui attribue ses droits admin ou non
+                      */
                      input=new Users();
                      input.setLogin(request.getParameter("pseudo"));
                      input.setPwd(request.getParameter("pass"));
@@ -79,16 +89,29 @@ public class Control extends HttpServlet {
                             request.getRequestDispatcher(BIENVENUE).forward(request, response);
                         }
                         else{
+                            /**
+                             * Mauvais mot de passe ou LOgin
+                             */
                              request.setAttribute("wrongLoginPassword", FIELD_ERROR_LOG);
                              request.getRequestDispatcher(ACCUEIL).forward(request, response);
                         }
                  }
                  break;
+                 /**
+                  * clic sur ajouter
+                  */
             case "ajouter":
                  request.getRequestDispatcher(CREATE).forward(request, response);
                  break;
                  
+                 /**
+                  * Clic sur détails
+                  */
+                 
             case "details":
+                /**
+                 * Vérifie sur l'utilsagteur a bien été séléctionné
+                 */
                  String idi = request.getParameter("radiobtn");
                   if (idi != null) {
                       request.setAttribute("employee", employeSB.getEmployesByID(idi));
@@ -97,7 +120,9 @@ public class Control extends HttpServlet {
                   }
                 
                   else
+                      
                   {
+                      
                     request.setAttribute("SUPR_MSG_ERR",SUPR_MSG_ERR);
                                          request.setAttribute("input",request.getParameter("pseudo"));                                     
                                          request.setAttribute("vide", employeSB.getEmployes().isEmpty());
@@ -107,10 +132,17 @@ public class Control extends HttpServlet {
                   }
               
                 break;
+                /**
+                 * clic sur déconnecter
+                 */
             
             case "deconnecter":
                  request.getRequestDispatcher(ACCUEIL).forward(request, response);
                  break;
+                 
+                 /**
+                  * Clique surVoir liste
+                  */
             
             case "Retourliste":
                
@@ -121,7 +153,13 @@ public class Control extends HttpServlet {
                  request.getRequestDispatcher(BIENVENUE).forward(request, response);
                  break;
                 
+                 /**
+                  * Clic sur supprimer
+                  */
             case "supprimer":
+                /**
+                 * Vérifie que un utilsateur a bien été séléctionné
+                 */
                 String id = request.getParameter("radiobtn");
                                      if (id != null) {
                                         employeSB.deleteEmployesByID(id);
@@ -150,7 +188,9 @@ public class Control extends HttpServlet {
                                    
                           break;          
            
-          
+          /**
+           * Clic sur modifier
+           */
             case "Modifier":
                 
                  Employes empl = new Employes();
@@ -171,6 +211,10 @@ public class Control extends HttpServlet {
                  request.getRequestDispatcher(BIENVENUE).forward(request, response);
                 
                 break;
+                
+                /**
+                 * Clic sur valider Ajout
+                 */
                 
                 
             case "validerajout":

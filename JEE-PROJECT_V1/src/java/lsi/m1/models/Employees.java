@@ -10,7 +10,7 @@ package lsi.m1.models;
  * @author dahak
  */
 public class Employees {
-   
+
     int id;
     String nom;
     String pnom;
@@ -22,7 +22,7 @@ public class Employees {
     String ville;
     String email;
 
-      public Employees() {
+    public Employees() {
     }
 
     public Employees(int id, String nom, String pnom, String teldom, String telport, String telpro, String adresse, String codep, String ville, String email) {
@@ -38,11 +38,9 @@ public class Employees {
         this.email = email;
     }
 
-
     public int getId() {
         return id;
     }
-
 
     public String getNom() {
         return nom;
@@ -120,12 +118,4 @@ public class Employees {
         this.telpro = telpro;
     }
 
- 
-
-   
-    
-    
-        
-    
-    
 }
